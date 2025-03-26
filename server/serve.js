@@ -1,4 +1,3 @@
-// filepath: c:\Users\anton\Desktop\Curso-midu-6\server\serve.js
 import express from 'express'; // Importa el módulo express
 import http from 'http'; // Importa el módulo http de Node.js
 import { Server } from 'socket.io'; // Importa el módulo socket.io
