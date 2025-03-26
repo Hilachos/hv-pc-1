@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8"> <!-- Define la codificación de caracteres del documento -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Configura la vista para que sea responsive -->
+    <title>Chat TR</title> <!-- Título de la página -->
+    <style>
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #mensajes {
+            border: solid;
+            height: 500px;
+            width: 300px;
+            overflow-y: auto;
+            /* Solo permitir desplazamiento vertical */
+            word-wrap: break-word;
+            /* Ajustar palabras largas al ancho del contenedor */
+        }
+
+        .mensaje {
+            word-wrap: break-word;
+            padding: 1px;
+            /* Ajustar palabras largas al ancho del contenedor */
+        }
+    </style> <!-- Estilos CSS para centrar el contenido -->
+</head>
+
+<body>
+    <div class="center">
+        <h2>Mensajes</h2> <!-- Título de la sección de mensajes -->
+        <div id="mensajes">
+            <!-- Aquí se mostrarán los mensajes -->
+        </div> <!-- Contenedor para los mensajes, con estilo de borde y scroll -->
+    </div>
+    <div class="center" style="padding-top: 20px;">
+        <form id="form">
+            <label for="mensaje">Mensaje:</label> <!-- Etiqueta para el input de mensaje -->
+            <input type="text" name="mensaje" id="mensaje" style=""> <!-- Input de texto para escribir el mensaje -->
+            <input type="submit" value="Enviar"> <!-- Botón para enviar el mensaje -->
+        </form> <!-- Formulario para enviar mensajes -->
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script> <!-- Importa el script de Socket.IO -->
+    <script>
+        const socket = io(); // Conecta al servidor de Socket.IO
+
+        const form = document.getElementById('form'); // Obtiene el formulario por su ID
+        const mensajeInput = document.getElementById('mensaje'); // Obtiene el input de mensaje por su ID
+        const mensajesDiv = document.getElementById('mensajes'); // Obtiene el contenedor de mensajes por su ID
+
+        // Función para desplazar el contenedor de mensajes hacia el final
+        function scrollToBottom() {
+            mensajesDiv.scrollTop = mensajesDiv.scrollHeight;
+        }
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Previene el comportamiento por defecto del formulario
+            const mensaje = mensajeInput.value; // Obtiene el valor del input de mensaje
+            if (mensaje) {
+                socket.emit('chat message', mensaje); // Envía el mensaje al servidor a través de Socket.IO
+                mensajeInput.value = ''; // Limpia el input de mensaje
+            }
+        });
+
+        socket.on('chat message', function (msg) {
+            const p = document.createElement('p'); // Crea un nuevo elemento de párrafo
+            p.textContent = msg.texto; // Establece el contenido del párrafo como el mensaje recibido
+            p.classList.add('mensaje'); // Añade la clase 'mensaje' al párrafo
+            mensajesDiv.appendChild(p); // Añade el párrafo al contenedor de mensajes
+            scrollToBottom(); // Desplaza el contenedor de mensajes hacia el final
+        });
+
+        // Recibe y muestra los mensajes anteriores
+        socket.on('previous messages', function (messages) {
+            messages.forEach(function (msg) {
+                const p = document.createElement('p'); // Crea un nuevo elemento de párrafo
+                p.textContent = msg.texto; // Establece el contenido del párrafo como el mensaje recibido
+                p.classList.add('mensaje'); // Añade la clase 'mensaje' al párrafo
+                mensajesDiv.appendChild(p); // Añade el párrafo al contenedor de mensajes
+            });
+            scrollToBottom(); // Desplaza el contenedor de mensajes hacia el final después de cargar los mensajes anteriores
+        });
+    </script> <!-- Script para manejar la lógica del chat -->
+</body>
+
+</html>

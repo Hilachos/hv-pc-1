@@ -1,0 +1,12 @@
+{
+  "name": "chat-tr",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "serve.js",
+  "dependencies": {
+    "@libsql/client": "0.15.1",
+    "dotenv": "16.4.7",
+    "express": "4.21.2",
+    "socket.io": "^4.8.1"
+  }
+}
